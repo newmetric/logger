@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/newmetric/logger/zerolog"
@@ -13,6 +14,8 @@ var (
 )
 
 type Logger interface {
+	Level(level string) error
+
 	Debug(msg string, args ...interface{})
 	Info(msg string, args ...interface{})
 	Warn(msg string, args ...interface{})
@@ -25,4 +28,13 @@ func SetupZeroLog(module string, w io.Writer, opts ...zerolog.Opts) Logger {
 	LoggerMap[module] = logger
 
 	return logger
+}
+
+func ChangeLevel(module string, level string) error {
+	logger, ok := LoggerMap[module]
+	if !ok {
+		return fmt.Errorf("logger: module %s not found", module)
+	}
+
+	return logger.Level(level)
 }
