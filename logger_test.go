@@ -45,4 +45,11 @@ func TestLogger(t *testing.T) {
 		// {"level":"debug","module":"test3","time":"...","message":"debug msg"}
 		optLogger.Debug("debug msg")
 	}
+
+	assert.NoError(t, optLogger.Level("info"))
+	println()
+	{
+		// no-op
+		optLogger.Debug("debug msg")
+	}
 }

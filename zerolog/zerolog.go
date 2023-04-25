@@ -39,6 +39,18 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 	return zlogger
 }
 
+func (z *ZeroLogger) Level(level string) error {
+	l, err := zerolog.ParseLevel(level)
+	if err != nil {
+		return err
+	}
+
+	newLogger := z.Logger.Level(l)
+	z.Logger = &newLogger
+
+	return nil
+}
+
 func (z *ZeroLogger) Debug(msg string, args ...interface{}) {
 	z.Logger.Debug().Fields(args).Msg(msg)
 }
