@@ -33,7 +33,6 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 	}
 
 	for _, opt := range opts {
-		println("apply opts")
 		zlogger.Logger = opt(zlogger.Logger)
 	}
 
