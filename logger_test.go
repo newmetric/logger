@@ -31,10 +31,14 @@ func TestLogger(t *testing.T) {
 	}
 
 	assert.NoError(t, os.Setenv("TEST3_LOG_LEVEL", "info"))
-	optLogger := logger.SetupZeroLog("test3", os.Stdout, func(l *zerolog.Logger) *zerolog.Logger {
-		newLogger := l.Level(zerolog.DebugLevel)
-		return &newLogger
-	})
+	optLogger := logger.SetupZeroLog(
+		"test3",
+		os.Stdout,
+		// overwrite log level
+		func(l *zerolog.Logger) *zerolog.Logger {
+			newLogger := l.Level(zerolog.DebugLevel)
+			return &newLogger
+		})
 
 	println()
 	{

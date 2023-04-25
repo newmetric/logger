@@ -21,8 +21,8 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 		panic(err)
 	}
 
-	logger := zerolog.New(w).Level(level).
-		With().
+	// create new instance
+	logger := zerolog.New(w).Level(level).With().
 		Str("module", module).
 		Timestamp().
 		Logger()
