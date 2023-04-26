@@ -78,6 +78,10 @@ func (z *ZeroLogger) Error(msg string, args ...interface{}) {
 	z.Logger.Error().Fields(args).Msg(msg)
 }
 
+func (z *ZeroLogger) Fatal(msg string, args ...interface{}) {
+	z.Logger.Fatal().Fields(args).Msg(msg)
+}
+
 func (z *ZeroLogger) Trace(msg string, args ...interface{}) {
 	z.Logger.Trace().Fields(args).Msg(msg)
 }
