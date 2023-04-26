@@ -9,6 +9,9 @@ import (
 	"github.com/newmetric/logger/zerolog"
 )
 
+// re-exports
+type Logger = types.Logger
+
 var LoggerMap map[string]types.Logger = make(map[string]types.Logger)
 
 func ChangeLevel(module string, level string) error {
