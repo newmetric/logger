@@ -10,7 +10,15 @@ import (
 )
 
 // re-exports
-type Logger = types.Logger
+type (
+	Logger = types.Logger
+)
+
+var (
+	ParseLevel = types.ParseLevel
+)
+
+// ==========
 
 var LoggerMap map[string]types.Logger = make(map[string]types.Logger)
 

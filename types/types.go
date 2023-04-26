@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 type Level = int8
 
 const (
@@ -27,4 +29,28 @@ type Logger interface {
 	Error(msg string, args ...interface{})
 	Fatal(msg string, args ...interface{})
 	Trace(msg string, args ...interface{})
+}
+
+func ParseLevel(level string) (Level, error) {
+	switch level {
+	case "debug":
+		return DebugLevel, nil
+	case "info":
+		return InfoLevel, nil
+	case "warn":
+		return WarnLevel, nil
+	case "error":
+		return ErrorLevel, nil
+	case "fatal":
+		return FatalLevel, nil
+
+	case "disabled":
+		return Disabled, nil
+
+	case "trace":
+		return TraceLevel, nil
+
+	default:
+		return Disabled, fmt.Errorf("logger: invalid log level %s", level)
+	}
 }

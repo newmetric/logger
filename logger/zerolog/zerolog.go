@@ -15,22 +15,19 @@ type ZeroLogger struct {
 
 var (
 	_ types.Logger = (*ZeroLogger)(nil)
-
-	// re-export
-	ParseLevel = zerolog.ParseLevel
 )
 
 type Opts = func(*zerolog.Logger) *zerolog.Logger
 
 func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 	logLevel := utils.GetLogLevelFromEnv(module)
-	level, err := zerolog.ParseLevel(logLevel)
+	level, err := types.ParseLevel(logLevel)
 	if err != nil {
 		panic(err)
 	}
 
 	// create new instance
-	logger := zerolog.New(w).Level(level).With().
+	logger := zerolog.New(w).Level(zerolog.Level(level)).With().
 		Str("module", module).
 		Logger()
 
