@@ -3,6 +3,7 @@ package zerolog
 import (
 	"io"
 
+	"github.com/newmetric/logger/types"
 	"github.com/newmetric/logger/utils"
 	"github.com/rs/zerolog"
 )
@@ -11,6 +12,10 @@ type ZeroLogger struct {
 	*zerolog.Logger
 	module string
 }
+
+var (
+	_ types.Logger = (*ZeroLogger)(nil)
+)
 
 type Opts = func(*zerolog.Logger) *zerolog.Logger
 
@@ -37,6 +42,12 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 	}
 
 	return zlogger
+}
+
+func (z *ZeroLogger) With(args ...interface{}) types.Logger {
+	newLogger := z.Logger.With().Fields(args).Logger()
+	z.Logger = &newLogger
+	return z
 }
 
 func (z *ZeroLogger) Level(level string) error {
