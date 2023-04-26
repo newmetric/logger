@@ -1,7 +1,23 @@
 package types
 
+type Level = int8
+
+const (
+	DebugLevel Level = iota
+	InfoLevel
+	WarnLevel
+	ErrorLevel
+	FatalLevel
+
+	Disabled
+
+	TraceLevel Level = -1
+)
+
 type Logger interface {
-	Level(level string) error
+	SetLevel(level Level) error
+	GetLevel() Level
+
 	With(args ...interface{}) Logger
 
 	// sort by log level

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/newmetric/logger/noop"
+	"github.com/newmetric/logger/logger/noop"
+	"github.com/newmetric/logger/logger/zerolog"
 	"github.com/newmetric/logger/types"
-	"github.com/newmetric/logger/zerolog"
 )
 
 // re-exports
@@ -14,14 +14,16 @@ type Logger = types.Logger
 
 var LoggerMap map[string]types.Logger = make(map[string]types.Logger)
 
-func ChangeLevel(module string, level string) error {
+func ChangeLevel(module string, level types.Level) error {
 	logger, ok := LoggerMap[module]
 	if !ok {
 		return fmt.Errorf("logger: module %s not found", module)
 	}
 
-	return logger.Level(level)
+	return logger.SetLevel(level)
 }
+
+// logger
 
 func SetupZeroLogger(module string, w io.Writer, opts ...zerolog.Opts) types.Logger {
 	logger := zerolog.New(w, module, opts...)

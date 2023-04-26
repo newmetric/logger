@@ -10,7 +10,8 @@ var (
 
 func (n *NoOpLogger) With(args ...interface{}) types.Logger { return n }
 
-func (n *NoOpLogger) Level(string) error { return nil }
+func (n *NoOpLogger) SetLevel(types.Level) error { return nil }
+func (n *NoOpLogger) GetLevel() types.Level      { return types.Disabled }
 
 func (n *NoOpLogger) Debug(msg string, args ...interface{}) {}
 func (n *NoOpLogger) Info(msg string, args ...interface{})  {}

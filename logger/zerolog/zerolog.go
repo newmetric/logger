@@ -29,16 +29,17 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 	// create new instance
 	logger := zerolog.New(w).Level(level).With().
 		Str("module", module).
-		Timestamp().
 		Logger()
 
-	zlogger := &ZeroLogger{
-		Logger: &logger,
-		module: module,
-	}
+	l := &logger
 
 	for _, opt := range opts {
-		zlogger.Logger = opt(zlogger.Logger)
+		l = opt(l)
+	}
+
+	zlogger := &ZeroLogger{
+		Logger: l,
+		module: module,
 	}
 
 	return zlogger
@@ -50,16 +51,15 @@ func (z *ZeroLogger) With(args ...interface{}) types.Logger {
 	return z
 }
 
-func (z *ZeroLogger) Level(level string) error {
-	l, err := zerolog.ParseLevel(level)
-	if err != nil {
-		return err
-	}
-
-	newLogger := z.Logger.Level(l)
+func (z *ZeroLogger) SetLevel(level types.Level) error {
+	newLogger := z.Logger.Level(zerolog.Level(level))
 	z.Logger = &newLogger
 
 	return nil
+}
+
+func (z *ZeroLogger) GetLevel() types.Level {
+	return types.Level(z.Logger.GetLevel())
 }
 
 func (z *ZeroLogger) Debug(msg string, args ...interface{}) {
