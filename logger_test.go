@@ -11,9 +11,9 @@ import (
 
 func TestLogger(t *testing.T) {
 	assert.NoError(t, os.Setenv("TEST1_LOG_LEVEL", "info"))
-	log1 := logger.SetupZeroLog("test1", os.Stdout)
+	log1 := logger.SetupZeroLogger("test1", os.Stdout)
 	assert.NoError(t, os.Setenv("TEST2_LOG_LEVEL", "debug"))
-	log2 := logger.SetupZeroLog("test2", os.Stdout)
+	log2 := logger.SetupZeroLogger("test2", os.Stdout)
 
 	{
 		// no-op
@@ -31,7 +31,7 @@ func TestLogger(t *testing.T) {
 	}
 
 	assert.NoError(t, os.Setenv("TEST3_LOG_LEVEL", "info"))
-	optLogger := logger.SetupZeroLog(
+	optLogger := logger.SetupZeroLogger(
 		"test3",
 		os.Stdout,
 		// overwrite log level
