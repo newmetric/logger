@@ -15,6 +15,9 @@ type ZeroLogger struct {
 
 var (
 	_ types.Logger = (*ZeroLogger)(nil)
+
+	// re-export
+	ParseLevel = zerolog.ParseLevel
 )
 
 type Opts = func(*zerolog.Logger) *zerolog.Logger
