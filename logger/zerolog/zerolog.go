@@ -47,8 +47,9 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 
 func (z *ZeroLogger) With(args ...interface{}) types.Logger {
 	newLogger := z.Logger.With().Fields(args).Logger()
-	z.Logger = &newLogger
-	return z
+	return &ZeroLogger{
+		Logger: &newLogger,
+	}
 }
 
 func (z *ZeroLogger) SetLevel(level types.Level) error {
