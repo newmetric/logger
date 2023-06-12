@@ -14,6 +14,18 @@ type (
 	Logger = types.Logger
 )
 
+const (
+	Debug = types.DebugLevel
+	Info  = types.InfoLevel
+	Warn  = types.WarnLevel
+	Error = types.ErrorLevel
+	Fatal = types.FatalLevel
+
+	Disabled = types.Disabled
+
+	Trace = types.TraceLevel
+)
+
 var (
 	ParseLevel = types.ParseLevel
 )
@@ -31,7 +43,7 @@ func ChangeLevel(module string, level types.Level) error {
 	return logger.SetLevel(level)
 }
 
-// logger
+// logger instance
 
 func SetupZeroLogger(module string, w io.Writer, opts ...zerolog.Opts) types.Logger {
 	logger := zerolog.New(w, module, opts...)
