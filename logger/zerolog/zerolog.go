@@ -9,6 +9,7 @@ import (
 )
 
 type ZeroLogger struct {
+	w io.Writer
 	*zerolog.Logger
 	module string
 }
@@ -27,7 +28,9 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 	}
 
 	// create new instance
-	logger := zerolog.New(w).Level(zerolog.Level(level)).With().
+	logger := zerolog.New(w).
+		Level(zerolog.Level(level)).
+		With().
 		Str("module", module).
 		Logger()
 
@@ -37,16 +40,21 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 		l = opt(l)
 	}
 
-	zlogger := &ZeroLogger{
+	return &ZeroLogger{
+		w:      w,
 		Logger: l,
 		module: module,
 	}
-
-	return zlogger
 }
 
 func (z *ZeroLogger) With(args ...interface{}) types.Logger {
-	newLogger := z.Logger.With().Fields(args).Logger()
+	newLogger := zerolog.New(z.w).
+		Level(z.Logger.GetLevel()).
+		With().
+		Str("module", z.module).
+		Fields(args).
+		Logger()
+
 	return &ZeroLogger{
 		Logger: &newLogger,
 	}

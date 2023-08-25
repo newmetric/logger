@@ -30,10 +30,13 @@ func runTests(t *testing.T, tc []testCase) {
 func RunTests(t *testing.T, createLogger func(bufWriter *bytes.Buffer, moduleName string) logger.Logger) {
 	assert.NoError(t, os.Setenv("TEST1_LOG_LEVEL", "info"))
 	log1 := createLogger(outBuffer, "test1")
+	log1_1 := log1.With("key1", "value1")
 
 	testCases := []testCase{
 		{log1.Debug, "debug msg", ""},
 		{log1.Info, "info msg", "{\"level\":\"info\",\"module\":\"test1\",\"message\":\"info msg\"}\n"},
+		{log1_1.Debug, "debug msg", ""},
+		{log1_1.Info, "info msg", "{\"level\":\"info\",\"module\":\"test1\",\"key1\":\"value1\",\"message\":\"info msg\"}\n"},
 	}
 	runTests(t, testCases)
 
