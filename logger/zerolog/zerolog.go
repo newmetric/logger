@@ -2,6 +2,7 @@ package zerolog
 
 import (
 	"io"
+	"runtime/debug"
 
 	"github.com/newmetric/logger/types"
 	"github.com/newmetric/logger/utils"
@@ -84,7 +85,8 @@ func (z *ZeroLogger) Warn(msg string, args ...interface{}) {
 }
 
 func (z *ZeroLogger) Error(msg string, args ...interface{}) {
-	z.Logger.Error().Fields(args).Msg(msg)
+	stackArg := []interface{}{"stack-trace", debug.Stack()}
+	z.Logger.Error().Fields(args).Fields(stackArg).Msg(msg)
 }
 
 func (z *ZeroLogger) Fatal(msg string, args ...interface{}) {
