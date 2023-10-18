@@ -49,12 +49,7 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 }
 
 func (z *ZeroLogger) With(args ...interface{}) types.Logger {
-	newLogger := zerolog.New(z.w).
-		Level(z.Logger.GetLevel()).
-		With().
-		Str("module", z.module).
-		Fields(args).
-		Logger()
+	newLogger := z.Logger.With().Fields(args).Logger()
 
 	return &ZeroLogger{
 		Logger: &newLogger,
