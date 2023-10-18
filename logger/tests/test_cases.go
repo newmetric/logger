@@ -37,6 +37,7 @@ func RunTests(t *testing.T, createLogger func(bufWriter *bytes.Buffer, moduleNam
 		{log1.Info, "info msg", "{\"level\":\"info\",\"module\":\"test1\",\"message\":\"info msg\"}\n"},
 		{log1_1.Debug, "debug msg", ""},
 		{log1_1.Info, "info msg", "{\"level\":\"info\",\"module\":\"test1\",\"key1\":\"value1\",\"message\":\"info msg\"}\n"},
+		{log1.Info, "info msg", "{\"level\":\"info\",\"module\":\"test1\",\"message\":\"info msg\"}\n"},
 	}
 	runTests(t, testCases)
 
