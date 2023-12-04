@@ -1,6 +1,7 @@
 package zerolog
 
 import (
+	"fmt"
 	"io"
 	"runtime/debug"
 
@@ -81,11 +82,28 @@ func (z *ZeroLogger) Warn(msg string, args ...interface{}) {
 
 func (z *ZeroLogger) Error(msg string, args ...interface{}) {
 	stackArg := []interface{}{"stack-trace", debug.Stack()}
-	z.Logger.Error().Fields(args).Fields(stackArg).Msg(msg)
+	for _, arg := range args {
+		switch v := arg.(type) {
+		case error:
+			msg += fmt.Sprintf("| %s", v.Error())
+		case string:
+			msg += fmt.Sprintf("| %s", v)
+		}
+	}
+	z.Logger.Error().Fields(stackArg).Msg(msg)
 }
 
 func (z *ZeroLogger) Fatal(msg string, args ...interface{}) {
-	z.Logger.Fatal().Fields(args).Msg(msg)
+	stackArg := []interface{}{"stack-trace", debug.Stack()}
+	for _, arg := range args {
+		switch v := arg.(type) {
+		case error:
+			msg += fmt.Sprintf("| %s", v.Error())
+		case string:
+			msg += fmt.Sprintf("| %s", v)
+		}
+	}
+	z.Logger.Fatal().Fields(stackArg).Msg(msg)
 }
 
 func (z *ZeroLogger) Trace(msg string, args ...interface{}) {
