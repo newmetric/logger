@@ -82,28 +82,38 @@ func (z *ZeroLogger) Warn(msg string, args ...interface{}) {
 
 func (z *ZeroLogger) Error(msg string, args ...interface{}) {
 	stackArg := []interface{}{"stack-trace", debug.Stack()}
-	for _, arg := range args {
-		switch v := arg.(type) {
-		case error:
-			msg += fmt.Sprintf("| %s", v.Error())
-		case string:
-			msg += fmt.Sprintf("| %s", v)
+
+	if len(args)%2 == 1 { // if odd(It shouldn't be, but that's how external library writes it.)
+		for _, arg := range args {
+			switch v := arg.(type) {
+			case error:
+				msg += fmt.Sprintf("| %s", v.Error())
+			case string:
+				msg += fmt.Sprintf("| %s", v)
+			}
 		}
+		z.Logger.Error().Fields(stackArg).Msg(msg)
+	} else {
+		z.Logger.Error().Fields(args).Fields(stackArg).Msg(msg)
 	}
-	z.Logger.Error().Fields(stackArg).Msg(msg)
 }
 
 func (z *ZeroLogger) Fatal(msg string, args ...interface{}) {
 	stackArg := []interface{}{"stack-trace", debug.Stack()}
-	for _, arg := range args {
-		switch v := arg.(type) {
-		case error:
-			msg += fmt.Sprintf("| %s", v.Error())
-		case string:
-			msg += fmt.Sprintf("| %s", v)
+
+	if len(args)%2 == 1 { // if odd(It shouldn't be, but that's how external library writes it.)
+		for _, arg := range args {
+			switch v := arg.(type) {
+			case error:
+				msg += fmt.Sprintf("| %s", v.Error())
+			case string:
+				msg += fmt.Sprintf("| %s", v)
+			}
 		}
+		z.Logger.Fatal().Fields(stackArg).Msg(msg)
+	} else {
+		z.Logger.Fatal().Fields(args).Fields(stackArg).Msg(msg)
 	}
-	z.Logger.Fatal().Fields(stackArg).Msg(msg)
 }
 
 func (z *ZeroLogger) Trace(msg string, args ...interface{}) {
