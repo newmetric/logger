@@ -5,6 +5,6 @@ import (
 	"github.com/newmetric/logger/types"
 )
 
-func ApplyFmtExtensino(l types.Logger) fmt.FormatLogger {
+func ApplyFmtExtension(l types.Logger) fmt.FormatLogger {
 	return fmt.New(l)
 }
