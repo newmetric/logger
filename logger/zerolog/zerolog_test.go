@@ -33,3 +33,18 @@ func TestZeroLogStackTrace(t *testing.T) {
 	contains("logger/logger/zerolog.(*ZeroLogger).Error(")
 	contains("runtime/debug.Stack()")
 }
+
+func TestZeroLogStackTraceDisabled(t *testing.T) {
+	buf := &bytes.Buffer{}
+	logger := zerolog.New(buf, "test")
+	logger.DisableStackTrace()
+
+	logger.Error("error msg")
+
+	notContains := func(s string) {
+		assert.False(t, strings.Contains(buf.String(), s))
+	}
+
+	notContains("logger/logger/zerolog.(*ZeroLogger).Error(")
+	notContains("runtime/debug.Stack()")
+}
