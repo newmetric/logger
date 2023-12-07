@@ -14,10 +14,13 @@ type ZeroLogger struct {
 	w io.Writer
 	*zerolog.Logger
 	module string
+
+	disableStackTrace bool
 }
 
 var (
-	_ types.Logger = (*ZeroLogger)(nil)
+	_ types.Logger           = (*ZeroLogger)(nil)
+	_ types.StackTraceOption = (*ZeroLogger)(nil)
 )
 
 type Opts = func(*zerolog.Logger) *zerolog.Logger
@@ -46,7 +49,13 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 		w:      w,
 		Logger: l,
 		module: module,
+
+		disableStackTrace: false,
 	}
+}
+
+func (z *ZeroLogger) DisableStackTrace() {
+	z.disableStackTrace = true
 }
 
 func (z *ZeroLogger) With(args ...interface{}) types.Logger {
@@ -81,7 +90,10 @@ func (z *ZeroLogger) Warn(msg string, args ...interface{}) {
 }
 
 func (z *ZeroLogger) Error(msg string, args ...interface{}) {
-	stackArg := []interface{}{"stack-trace", debug.Stack()}
+	var stackArg []interface{} = make([]interface{}, 0)
+	if !z.disableStackTrace {
+		stackArg = []interface{}{"stack-trace", debug.Stack()}
+	}
 
 	if len(args)%2 == 1 { // if odd(It shouldn't be, but that's how external library writes it.)
 		for _, arg := range args {
@@ -99,7 +111,10 @@ func (z *ZeroLogger) Error(msg string, args ...interface{}) {
 }
 
 func (z *ZeroLogger) Fatal(msg string, args ...interface{}) {
-	stackArg := []interface{}{"stack-trace", debug.Stack()}
+	var stackArg []interface{} = make([]interface{}, 0)
+	if !z.disableStackTrace {
+		stackArg = []interface{}{"stack-trace", debug.Stack()}
+	}
 
 	if len(args)%2 == 1 { // if odd(It shouldn't be, but that's how external library writes it.)
 		for _, arg := range args {

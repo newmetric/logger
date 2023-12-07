@@ -31,6 +31,10 @@ type Logger interface {
 	Trace(msg string, args ...interface{})
 }
 
+type StackTraceOption interface {
+	DisableStackTrace()
+}
+
 func ParseLevel(level string) (Level, error) {
 	switch level {
 	case "debug":

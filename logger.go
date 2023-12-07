@@ -11,7 +11,11 @@ import (
 
 // re-exports
 type (
+	// instance type
 	Logger = types.Logger
+
+	// option
+	StackTraceOption = types.StackTraceOption
 )
 
 const (
