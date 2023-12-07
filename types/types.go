@@ -31,7 +31,7 @@ type Logger interface {
 	Trace(msg string, args ...interface{})
 }
 
-type StackTraceOption interface {
+type DisableStackTraceOption interface {
 	DisableStackTrace()
 }
 

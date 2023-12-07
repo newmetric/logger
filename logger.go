@@ -15,7 +15,7 @@ type (
 	Logger = types.Logger
 
 	// option
-	StackTraceOption = types.StackTraceOption
+	DisableStackTraceOption = types.DisableStackTraceOption
 )
 
 const (
@@ -58,4 +58,15 @@ func SetupZeroLogger(module string, w io.Writer, opts ...zerolog.Opts) types.Log
 
 func SetupNoOpLogger() types.Logger {
 	return &noop.NoOpLogger{}
+}
+
+// logger option helper
+
+func DisableStackTrace(logger Logger) error {
+	if logger, ok := logger.(DisableStackTraceOption); ok {
+		logger.DisableStackTrace()
+		return nil
+	}
+
+	return fmt.Errorf("logger: logger %T does not support disable stack trace option", logger)
 }

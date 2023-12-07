@@ -19,8 +19,8 @@ type ZeroLogger struct {
 }
 
 var (
-	_ types.Logger           = (*ZeroLogger)(nil)
-	_ types.StackTraceOption = (*ZeroLogger)(nil)
+	_ types.Logger                  = (*ZeroLogger)(nil)
+	_ types.DisableStackTraceOption = (*ZeroLogger)(nil)
 )
 
 type Opts = func(*zerolog.Logger) *zerolog.Logger
