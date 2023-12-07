@@ -49,6 +49,8 @@ func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
 		w:      w,
 		Logger: l,
 		module: module,
+
+		disableStackTrace: false,
 	}
 }
 
