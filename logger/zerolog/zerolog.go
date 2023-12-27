@@ -11,10 +11,9 @@ import (
 )
 
 type ZeroLogger struct {
-	w io.Writer
 	*zerolog.Logger
-	module string
-
+	w                 io.Writer
+	module            string
 	disableStackTrace bool
 }
 
@@ -133,4 +132,10 @@ func (z *ZeroLogger) Fatal(msg string, args ...interface{}) {
 
 func (z *ZeroLogger) Trace(msg string, args ...interface{}) {
 	z.Logger.Trace().Fields(args).Msg(msg)
+}
+
+// ReplaceOutputWriter replaces the output writer of the logger.
+func (z *ZeroLogger) ReplaceOutputWriter(w io.Writer) {
+	nextLogger := z.Logger.Output(w)
+	z.Logger = &nextLogger
 }

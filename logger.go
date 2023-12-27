@@ -11,11 +11,16 @@ import (
 
 // re-exports
 type (
-	// instance type
-	Logger = types.Logger
-
-	// option
+	Logger                  = types.Logger
 	DisableStackTraceOption = types.DisableStackTraceOption
+)
+
+var (
+	// ParseLevel parses a level string into a logger Level value.
+	ParseLevel = types.ParseLevel
+
+	// LoggerMap is a map managing levels for individual modules
+	LoggerMap map[string]types.Logger = make(map[string]types.Logger)
 )
 
 const (
@@ -30,14 +35,7 @@ const (
 	Trace = types.TraceLevel
 )
 
-var (
-	ParseLevel = types.ParseLevel
-)
-
-// ==========
-
-var LoggerMap map[string]types.Logger = make(map[string]types.Logger)
-
+// ChangeLevel changes the level of a logger.
 func ChangeLevel(module string, level types.Level) error {
 	logger, ok := LoggerMap[module]
 	if !ok {
@@ -47,8 +45,7 @@ func ChangeLevel(module string, level types.Level) error {
 	return logger.SetLevel(level)
 }
 
-// logger instance
-
+// SetupZeroLogger returns a new logger instance.
 func SetupZeroLogger(module string, w io.Writer, opts ...zerolog.Opts) types.Logger {
 	logger := zerolog.New(w, module, opts...)
 	LoggerMap[module] = logger
@@ -56,12 +53,12 @@ func SetupZeroLogger(module string, w io.Writer, opts ...zerolog.Opts) types.Log
 	return logger
 }
 
+// SetupNoOpLogger returns a no-op logger.
 func SetupNoOpLogger() types.Logger {
 	return &noop.NoOpLogger{}
 }
 
-// logger option helper
-
+// DisableStackTrace disables stack trace for logger.
 func DisableStackTrace(logger Logger) error {
 	if logger, ok := logger.(DisableStackTraceOption); ok {
 		logger.DisableStackTrace()

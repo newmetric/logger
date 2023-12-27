@@ -1,6 +1,9 @@
 package noop
 
-import "github.com/newmetric/logger/types"
+import (
+	"github.com/newmetric/logger/types"
+	"io"
+)
 
 type NoOpLogger struct{}
 
@@ -19,3 +22,4 @@ func (n *NoOpLogger) Warn(msg string, args ...interface{})  {}
 func (n *NoOpLogger) Error(msg string, args ...interface{}) {}
 func (n *NoOpLogger) Fatal(msg string, args ...interface{}) {}
 func (n *NoOpLogger) Trace(msg string, args ...interface{}) {}
+func (n *NoOpLogger) ReplaceOutputWriter(w io.Writer)       {}
