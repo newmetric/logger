@@ -172,6 +172,7 @@ func TestAtomicLoggerHttpHandler(t *testing.T) {
 	addr := fmt.Sprintf("localhost:%d", port)
 	logger := &noop.NoOpLogger{}
 	atomicLogger := atomic.New(logger)
+	atomicLogger.SetLevel(types.InfoLevel)
 
 	go func() {
 		err := http.ListenAndServe(addr, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -205,4 +206,7 @@ func TestAtomicLoggerHttpHandler(t *testing.T) {
 	resp, err := req("POST", "/level", types.DebugLevel)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	// check level
+	assert.Equal(t, types.DebugLevel, atomicLogger.GetLevel())
 }
