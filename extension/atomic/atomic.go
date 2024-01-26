@@ -14,6 +14,8 @@ type AtomicLogger interface {
 	SetLevel(level types.Level) error
 	GetLevel() types.Level
 
+	HttpHandler() http.HandlerFunc
+
 	types.Logger
 }
 
@@ -40,7 +42,7 @@ func New(l types.Logger) *logger {
 	}
 }
 
-func ChangeLoggerAtomicLevel(logger AtomicLogger) func(w http.ResponseWriter, r *http.Request) {
+func (logger *logger) HttpHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
 
@@ -72,6 +74,7 @@ func ChangeLoggerAtomicLevel(logger AtomicLogger) func(w http.ResponseWriter, r 
 		}
 
 		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
 	}
 }
 

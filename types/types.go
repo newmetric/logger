@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-type Level = int8
+type Level int8
 
 const (
 	DebugLevel Level = iota
@@ -18,6 +18,27 @@ const (
 
 	TraceLevel Level = -1
 )
+
+func (l Level) String() string {
+	switch l {
+	case DebugLevel:
+		return "debug"
+	case InfoLevel:
+		return "info"
+	case WarnLevel:
+		return "warn"
+	case ErrorLevel:
+		return "error"
+	case FatalLevel:
+		return "fatal"
+	case Disabled:
+		return "disabled"
+	case TraceLevel:
+		return "trace"
+	default:
+		return "unknown"
+	}
+}
 
 type Logger interface {
 	// SetLevel sets the logger level

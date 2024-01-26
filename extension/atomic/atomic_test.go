@@ -1,14 +1,20 @@
 package atomic_test
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io"
+	"net/http"
 	"sync"
 	std_atomic "sync/atomic"
 	"testing"
 
 	"github.com/newmetric/logger/extension/atomic"
+	"github.com/newmetric/logger/logger/noop"
 	"github.com/newmetric/logger/logger/zerolog"
 	"github.com/newmetric/logger/types"
+	"github.com/phayes/freeport"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -67,4 +73,136 @@ func TestAtomicLoggerRace(t *testing.T) {
 	wg.Wait()
 
 	assert.NotEqual(t, buf.n.Load(), 0, "No logs were written")
+}
+
+func TestCheckLevel(t *testing.T) {
+	buf := bytes.NewBuffer(nil)
+	logger := zerolog.New(buf, "test")
+	atomicLogger := atomic.New(logger)
+
+	levelCheck := func(level types.Level, tcs []struct {
+		expected bool
+		cb       func()
+	}) {
+		atomicLogger.SetLevel(level)
+
+		for _, tc := range tcs {
+			buf.Reset()
+			tc.cb()
+			assert.Equal(t,
+				tc.expected,
+				0 < buf.Len(),
+				"Level %s", level.String(),
+			)
+		}
+	}
+
+	levelCheck(types.DebugLevel,
+		[]struct {
+			expected bool
+			cb       func()
+		}{
+			{false, func() { atomicLogger.Trace("6") }},
+
+			{true, func() { atomicLogger.Info("2") }},
+			{true, func() { atomicLogger.Debug("1") }},
+			{true, func() { atomicLogger.Warn("3") }},
+			{true, func() { atomicLogger.Error("4") }},
+		},
+	)
+	levelCheck(types.InfoLevel,
+		[]struct {
+			expected bool
+			cb       func()
+		}{
+			{false, func() { atomicLogger.Debug("1") }},
+			{false, func() { atomicLogger.Trace("6") }},
+
+			{true, func() { atomicLogger.Warn("3") }},
+			{true, func() { atomicLogger.Info("2") }},
+			{true, func() { atomicLogger.Error("4") }},
+		},
+	)
+	levelCheck(types.WarnLevel,
+		[]struct {
+			expected bool
+			cb       func()
+		}{
+			{false, func() { atomicLogger.Debug("1") }},
+			{false, func() { atomicLogger.Trace("6") }},
+			{false, func() { atomicLogger.Info("2") }},
+
+			{true, func() { atomicLogger.Error("4") }},
+			{true, func() { atomicLogger.Warn("6") }},
+		},
+	)
+	levelCheck(types.ErrorLevel,
+		[]struct {
+			expected bool
+			cb       func()
+		}{
+			{false, func() { atomicLogger.Debug("1") }},
+			{false, func() { atomicLogger.Trace("6") }},
+			{false, func() { atomicLogger.Info("2") }},
+			{false, func() { atomicLogger.Warn("3") }},
+
+			{true, func() { atomicLogger.Error("4") }},
+		},
+	)
+	levelCheck(types.TraceLevel,
+		[]struct {
+			expected bool
+			cb       func()
+		}{
+			{true, func() { atomicLogger.Debug("1") }},
+			{true, func() { atomicLogger.Trace("6") }},
+			{true, func() { atomicLogger.Info("2") }},
+			{true, func() { atomicLogger.Warn("3") }},
+			{true, func() { atomicLogger.Error("4") }},
+		},
+	)
+}
+
+func TestAtomicLoggerHttpHandler(t *testing.T) {
+	port, err := freeport.GetFreePort()
+	if err != nil {
+		panic(err)
+	}
+
+	addr := fmt.Sprintf("localhost:%d", port)
+	logger := &noop.NoOpLogger{}
+	atomicLogger := atomic.New(logger)
+
+	go func() {
+		err := http.ListenAndServe(addr, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println(r.URL.Path)
+			if r.URL.Path == "/level" {
+				atomicLogger.HttpHandler()(w, r)
+				return
+			}
+		}))
+		assert.NoError(t, err)
+	}()
+
+	req := func(method, path string, level types.Level) (*http.Response, error) {
+		m := make(map[string]string)
+		m["level"] = level.String()
+		jsonBytes, err := json.Marshal(m)
+		if err != nil {
+			return nil, err
+		}
+
+		url := fmt.Sprintf("http://%s%s", addr, path)
+		request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(jsonBytes))
+		if err != nil {
+			return nil, err
+		}
+
+		return http.DefaultClient.Do(request)
+	}
+
+	// set level
+	resp, err := req("POST", "/level", types.DebugLevel)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
