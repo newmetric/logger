@@ -210,3 +210,45 @@ func TestAtomicLoggerHttpHandler(t *testing.T) {
 	// check level
 	assert.Equal(t, types.DebugLevel, atomicLogger.GetLevel())
 }
+
+func TestDerivedLogger(t *testing.T) {
+	buf := bytes.NewBuffer(nil)
+	logger := zerolog.New(buf, "test")
+	logger.SetLevel(types.InfoLevel)
+	atomicLogger := atomic.New(logger)
+
+	// derived logger
+	derivedLogger := atomicLogger.With("key", "derived")
+
+	// print debug log, but it should not be printed
+	derivedLogger.Debug("1")
+	assert.NotContains(t, buf.String(), "key")
+	assert.NotContains(t, buf.String(), "derived")
+
+	// print info log
+	derivedLogger.Info("1")
+
+	// verify that the newly added keys and value are printed
+	assert.Contains(t, buf.String(), "key")
+	assert.Contains(t, buf.String(), "derived")
+}
+
+func TestDerivedLoggerChangeLevel(t *testing.T) {
+	buf := bytes.NewBuffer(nil)
+	logger := zerolog.New(buf, "test")
+	logger.SetLevel(types.InfoLevel)
+	atomicLogger := atomic.New(logger)
+
+	// derived logger
+	derivedLogger := atomicLogger.With("key", "derived")
+
+	// lower origin logger level
+	atomicLogger.SetLevel(types.DebugLevel)
+
+	// print
+	derivedLogger.Debug("1")
+
+	// check whether the derived logger is affected by changes to the original logger level.
+	assert.Contains(t, buf.String(), "key")
+	assert.Contains(t, buf.String(), "derived")
+}
