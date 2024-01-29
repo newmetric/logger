@@ -44,6 +44,11 @@ func New(l types.Logger) *logger {
 
 func (logger *logger) HttpHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 
 		m := make(map[string]string)
