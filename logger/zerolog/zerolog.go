@@ -25,7 +25,7 @@ var (
 type Opts = func(*zerolog.Logger) *zerolog.Logger
 
 func New(w io.Writer, module string, opts ...Opts) *ZeroLogger {
-	logLevel := utils.GetLogLevelFromEnv(module)
+	logLevel := utils.GetLogLevelFromEnvPerModule(module)
 	level, err := types.ParseLevel(logLevel)
 	if err != nil {
 		panic(err)

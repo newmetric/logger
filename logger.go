@@ -7,6 +7,7 @@ import (
 	"github.com/newmetric/logger/logger/noop"
 	"github.com/newmetric/logger/logger/zerolog"
 	"github.com/newmetric/logger/types"
+	"github.com/newmetric/logger/utils"
 )
 
 // re-exports
@@ -48,6 +49,13 @@ func ChangeLevel(module string, level types.Level) error {
 // SetupZeroLogger returns a new logger instance.
 func SetupZeroLogger(module string, w io.Writer, opts ...zerolog.Opts) types.Logger {
 	logger := zerolog.New(w, module, opts...)
+	logLevel := utils.GetLogLevelFromEnv()
+	level, err := ParseLevel(logLevel)
+	if err != nil {
+		panic(err) // unreachable
+	}
+
+	logger.SetLevel(level)
 	LoggerMap[module] = logger
 
 	return logger

@@ -10,8 +10,18 @@ const (
 	defaultLogLevel = "info"
 )
 
-func GetLogLevelFromEnv(module string) string {
+func GetLogLevelFromEnvPerModule(module string) string {
 	logLevel := os.Getenv(fmt.Sprintf("%s_LOG_LEVEL", strings.ToUpper(module)))
+
+	if logLevel == "" {
+		logLevel = defaultLogLevel
+	}
+
+	return logLevel
+}
+
+func GetLogLevelFromEnv() string {
+	logLevel := os.Getenv("LOG_LEVEL")
 
 	if logLevel == "" {
 		logLevel = defaultLogLevel
