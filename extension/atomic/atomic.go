@@ -83,6 +83,15 @@ func (logger *logger) HttpHandler() http.HandlerFunc {
 	}
 }
 
+func (l *logger) With(args ...interface{}) types.Logger {
+	newLogger := l.Logger.With(args...)
+
+	return &logger{
+		level:  l.level,
+		Logger: newLogger,
+	}
+}
+
 func (l *logger) SetLevel(level types.Level) error {
 	l.level.Store(int32(level))
 	return nil
