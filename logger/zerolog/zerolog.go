@@ -66,7 +66,31 @@ func (z *ZeroLogger) With(args ...interface{}) types.Logger {
 }
 
 func (z *ZeroLogger) SetLevel(level types.Level) error {
-	newLogger := z.Logger.Level(zerolog.Level(level))
+	var zerologLevel zerolog.Level
+
+	switch level {
+	case types.DebugLevel:
+		zerologLevel = zerolog.DebugLevel
+	case types.InfoLevel:
+		zerologLevel = zerolog.InfoLevel
+	case types.WarnLevel:
+		zerologLevel = zerolog.WarnLevel
+	case types.ErrorLevel:
+		zerologLevel = zerolog.ErrorLevel
+	case types.FatalLevel:
+		zerologLevel = zerolog.FatalLevel
+
+	case types.Disabled:
+		zerologLevel = zerolog.Disabled
+
+	case types.TraceLevel:
+		zerologLevel = zerolog.TraceLevel
+
+	default:
+		return fmt.Errorf("ZeroLogger: invalid level %s, unknown type", level)
+	}
+
+	newLogger := z.Logger.Level(zerologLevel)
 	z.Logger = &newLogger
 
 	return nil
