@@ -11,6 +11,9 @@ const (
 )
 
 func GetLogLevelFromEnvPerModule(module string) string {
+	// replace dash to underscore
+	module = strings.ReplaceAll(module, "-", "_")
+
 	logLevel := os.Getenv(fmt.Sprintf("%s_LOG_LEVEL", strings.ToUpper(module)))
 
 	if logLevel == "" {
