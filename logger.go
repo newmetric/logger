@@ -14,6 +14,8 @@ import (
 type (
 	Logger                  = types.Logger
 	DisableStackTraceOption = types.DisableStackTraceOption
+
+	Level = types.Level
 )
 
 var (
