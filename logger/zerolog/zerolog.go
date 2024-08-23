@@ -100,6 +100,10 @@ func (z *ZeroLogger) GetLevel() types.Level {
 	return types.Level(z.Logger.GetLevel())
 }
 
+func (z *ZeroLogger) Printf(format string, args ...interface{}) {
+	fmt.Fprintf(z.w, format, args...)
+}
+
 func (z *ZeroLogger) Debug(msg string, args ...interface{}) {
 	z.Logger.Debug().Fields(args).Msg(msg)
 }
