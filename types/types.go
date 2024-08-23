@@ -50,6 +50,9 @@ type Logger interface {
 	// ReplaceOutputWriter replaces the output writer of the current logger
 	ReplaceOutputWriter(w io.Writer)
 
+	// like fmt.Printf
+	Printf(format string, args ...interface{})
+
 	// With returns a new Logger with keyvals prepended to those passed to calls to
 	With(args ...interface{}) Logger
 
